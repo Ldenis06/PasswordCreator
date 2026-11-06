@@ -17,12 +17,12 @@ length.addEventListener('input', () => {
   document.querySelector('#length-value').value = length.value;
   clear('Configuración actualizada. Generá una nueva contraseña.');
 });
-form.addEventListener('change', () => clear('Configuración actualizada. Generá una nueva contraseña.'));
+document.querySelector('#settings-panel').addEventListener('change', () => clear('Configuración actualizada. Generá una nueva contraseña.'));
 form.addEventListener('submit', event => {
   event.preventDefault();
   clear('');
   try {
-    password.textContent = generatePassword(Number(length.value), [...form.querySelectorAll('[name=group]:checked')].map(input => input.value));
+    password.textContent = generatePassword(Number(length.value), [...document.querySelectorAll('[name=group]:checked')].map(input => input.value));
     result.hidden = false;
     status.textContent = 'Contraseña generada. Copiala antes de 60 segundos.';
     expiry = setTimeout(() => clear('La contraseña venció y se borró de esta pantalla.'), 60000);
@@ -54,3 +54,25 @@ window.addEventListener('appinstalled', () => { install.hidden = true; installPr
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {
   status.textContent = 'Modo sin conexión no disponible. Podés seguir generando contraseñas.';
 });
+
+const tabs = [document.querySelector('#create-tab'), document.querySelector('#settings-tab')];
+for (const tab of tabs) tab.addEventListener('click', () => {
+  clear('Generá una contraseña para empezar.');
+  for (const item of tabs) {
+    const active = item === tab;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-expanded', String(active));
+    document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
+  }
+});
+const theme = document.querySelector('#theme');
+const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme() {
+  if (theme.value === 'system') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = theme.value;
+  const dark = theme.value === 'dark' || (theme.value === 'system' && systemTheme.matches);
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#212121' : '#f5f5f3';
+}
+theme.addEventListener('change', applyTheme);
+systemTheme.addEventListener('change', applyTheme);
+applyTheme();

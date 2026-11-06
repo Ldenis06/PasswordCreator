@@ -24,3 +24,7 @@ El portapapeles es externo a la aplicación y puede conservar historial o sincro
 ## Instalación y despliegue
 
 Abrí la web en un navegador compatible y elegí Instalar aplicación cuando se ofrezca; en iOS usá Compartir → Agregar a inicio. La disponibilidad depende del navegador. HTTPS es obligatorio en producción para Web Crypto, portapapeles y service worker; localhost se admite para desarrollo. La primera carga debe ser en línea; las siguientes pueden funcionar sin conexión. El servidor incluido sirve desarrollo; publicá los archivos estáticos con HTTPS para uso público. No se necesitan secretos ni base de datos.
+
+## Interfaz
+
+Crear contraseña muestra el generador. Configuración permite ajustar longitud y caracteres, y elegir apariencia clara, oscura o del sistema. Las preferencias duran durante la sesión y no se guardan.
