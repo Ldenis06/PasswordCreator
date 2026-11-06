@@ -1,0 +1,56 @@
+import { generatePassword } from './generator.js';
+const form = document.querySelector('#generator');
+const length = document.querySelector('#length');
+const result = document.querySelector('#result');
+const password = document.querySelector('#password');
+const status = document.querySelector('#status');
+let expiry;
+let revision = 0;
+function clear(message = 'Contraseña borrada de esta pantalla.') {
+  clearTimeout(expiry);
+  password.textContent = '';
+  result.hidden = true;
+  revision++;
+  status.textContent = message;
+}
+length.addEventListener('input', () => {
+  document.querySelector('#length-value').value = length.value;
+  clear('Configuración actualizada. Generá una nueva contraseña.');
+});
+form.addEventListener('change', () => clear('Configuración actualizada. Generá una nueva contraseña.'));
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  clear('');
+  try {
+    password.textContent = generatePassword(Number(length.value), [...form.querySelectorAll('[name=group]:checked')].map(input => input.value));
+    result.hidden = false;
+    status.textContent = 'Contraseña generada. Copiala antes de 60 segundos.';
+    expiry = setTimeout(() => clear('La contraseña venció y se borró de esta pantalla.'), 60000);
+  } catch (error) { status.textContent = error.message; }
+});
+document.querySelector('#clear').addEventListener('click', () => clear());
+document.querySelector('#copy').addEventListener('click', async () => {
+  if (!password.textContent) return;
+  const current = revision;
+  try {
+    await navigator.clipboard.writeText(password.textContent);
+    if (current === revision) clear('Copiada al portapapeles y borrada de esta pantalla.');
+  } catch {
+    if (current === revision) status.textContent = 'No se pudo copiar. Revisá el permiso del portapapeles y usá HTTPS o localhost.';
+  }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); });
+window.addEventListener('pagehide', () => clear());
+const install = document.querySelector('#install');
+let installPrompt;
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault(); installPrompt = event; install.hidden = false;
+});
+install.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  await installPrompt.prompt(); installPrompt = undefined; install.hidden = true;
+});
+window.addEventListener('appinstalled', () => { install.hidden = true; installPrompt = undefined; });
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {
+  status.textContent = 'Modo sin conexión no disponible. Podés seguir generando contraseñas.';
+});

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172822"><meta name="description" content="Contraseñas seguras, efímeras y generadas en tu dispositivo.">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./style.css"><title>Clave fugaz · Generador de contraseñas</title>
+<script src="./app.js" type="module"></script>
+</head>
+<body>
+<header><a class="brand" href="./">✳ <span>clave fugaz</span></a><span class="badge">PRIVADO POR DISEÑO</span></header>
+<main>
+<section class="intro"><p class="eyebrow">UNA CLAVE. SOLO POR UN MOMENTO.</p><h1>Tu próxima clave.<br><em>Sin dejarla guardada.</em></h1><p class="subtitle">Creala acá, copiala y seguí. Se genera en tu dispositivo y desaparece de esta pantalla al copiarla.</p><div class="assurance"><span>↗ Sin cuentas</span><span>◈ Sin almacenamiento</span><span>⌁ Disponible sin conexión</span></div></section>
+<section class="card" aria-label="Generador de contraseñas">
+<div class="card-heading"><h2>Creá tu contraseña</h2><span class="dot-label">Generación local</span></div>
+<form id="generator">
+<div class="length-heading"><label for="length">Longitud</label><output id="length-value" for="length">20</output></div>
+<input type="range" id="length" min="8" max="128" value="20"><div class="range-labels"><span>8 caracteres</span><span>128 caracteres</span></div>
+<fieldset><legend>Incluir caracteres</legend><div class="options">
+<label><input type="checkbox" name="group" value="upper" checked><span>Mayúsculas</span><small>A–Z</small></label>
+<label><input type="checkbox" name="group" value="lower" checked><span>Minúsculas</span><small>a–z</small></label>
+<label><input type="checkbox" name="group" value="digits" checked><span>Números</span><small>0–9</small></label>
+<label><input type="checkbox" name="group" value="symbols" checked><span>Símbolos</span><small>!@#</small></label>
+</div></fieldset>
+<button type="submit" class="primary">Generar contraseña <span aria-hidden="true">↗</span></button>
+</form>
+<div class="result" id="result" hidden><label for="password">TU CONTRASEÑA TEMPORAL</label><output id="password" aria-label="Contraseña generada"></output><div class="result-actions"><button id="copy" type="button">Copiar y borrar</button><button id="clear" class="secondary" type="button">Borrar</button></div><small>Se borra también al salir de esta pestaña o después de 60 segundos.</small></div>
+<p id="status" role="status" aria-live="polite">Lista cuando vos estés.</p>
+</section>
+<section class="privacy"><span aria-hidden="true">◎</span><div><h2>Lo efímero también es seguro.</h2><p>No enviamos tus contraseñas a un servidor ni las guardamos. Al copiar, quedan en el portapapeles: tu sistema o gestor puede conservar su historial. Borrarlo depende de tu dispositivo.</p></div></section>
+<button id="install" class="secondary install" hidden>Instalar aplicación</button>
+</main><footer>Hecha para durar un momento. <span>Sin rastreadores. Sin registros.</span></footer>
+</body></html>

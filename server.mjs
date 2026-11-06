@@ -1,0 +1,20 @@
+import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
+const files = new Map([
+  ['/', ['index.html', 'text/html']], ['/index.html', ['index.html', 'text/html']],
+  ...['style.css','app.js','generator.js','sw.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png'].map(file => ['/'+file,[file, file.endsWith('.css') ? 'text/css' : file.endsWith('.js') ? 'text/javascript' : file.endsWith('.webmanifest') ? 'application/manifest+json' : file.endsWith('.svg') ? 'image/svg+xml' : 'image/png']])
+]);
+const server = createServer(async (req, res) => {
+  const entry = files.get(new URL(req.url, 'http://localhost').pathname);
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; worker-src 'self'; manifest-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
+  if (!entry || !['GET','HEAD'].includes(req.method)) { res.writeHead(404); res.end(); return; }
+  try {
+    const data = await readFile(new URL(entry[0], import.meta.url));
+    res.setHeader('Content-Type', entry[1] + (entry[1].startsWith('text/') ? '; charset=utf-8' : ''));
+    res.writeHead(200); res.end(req.method === 'HEAD' ? undefined : data);
+  } catch { res.writeHead(500); res.end('No se pudo cargar el recurso.'); }
+});
+server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => console.log('Clave fugaz: servidor iniciado en puerto '+server.address().port));
