@@ -30,11 +30,15 @@ jobs:
           cp index.html style.css app.js pwa.js generator.js sw.js manifest.webmanifest _site/
           cp -r icons _site/
       - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v5
+      - name: Subir paquete de GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
+          name: github-pages
           path: _site
+          retention-days: 1
       - name: Publicar
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
         with:
+          artifact_name: github-pages
           timeout: 600000
