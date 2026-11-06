@@ -1,13 +1,17 @@
-import { generatePassword } from './generator.js';
+import { generatePassword } from './generator.js?v=6';
 const form = document.querySelector('#generator');
 const length = document.querySelector('#length');
 const result = document.querySelector('#result');
 const password = document.querySelector('#password');
 const status = document.querySelector('#status');
+const personalize = document.querySelector('#personalize');
+const personalWord = document.querySelector('#personal-word');
+const personalOptions = document.querySelector('#personal-options');
 let expiry;
 let revision = 0;
-function clear(message = 'Contraseña borrada de esta pantalla.') {
+function clear(message = 'Contraseña borrada de esta pantalla.', eraseWord = true) {
   clearTimeout(expiry);
+  if (eraseWord) personalWord.value = '';
   password.textContent = '';
   result.hidden = true;
   revision++;
@@ -20,9 +24,10 @@ length.addEventListener('input', () => {
 document.querySelector('#settings-panel').addEventListener('change', () => clear('Configuración actualizada. Generá una nueva contraseña.'));
 form.addEventListener('submit', event => {
   event.preventDefault();
-  clear('');
+  clear('', false);
   try {
-    password.textContent = generatePassword(Number(length.value), [...document.querySelectorAll('[name=group]:checked')].map(input => input.value));
+    if (personalize.checked && !personalWord.value.trim()) throw new Error('Escribí una palabra o desactivá la opción de incluirla.');
+    password.textContent = generatePassword(Number(length.value), [...document.querySelectorAll('[name=group]:checked')].map(input => input.value), personalize.checked ? personalWord.value : '');
     result.hidden = false;
     status.textContent = 'Contraseña generada. Copiala antes de 60 segundos.';
     expiry = setTimeout(() => clear('La contraseña venció y se borró de esta pantalla.'), 60000);
@@ -89,3 +94,10 @@ function applyTheme() {
 theme.addEventListener('change', applyTheme);
 systemTheme.addEventListener('change', applyTheme);
 applyTheme();
+
+personalize.addEventListener('change', () => {
+  clear('Generá una nueva contraseña.');
+  personalOptions.hidden = !personalize.checked;
+  if (personalize.checked) personalWord.focus();
+});
+personalWord.addEventListener('input', () => clear('Palabra actualizada. Generá una nueva contraseña.', false));

@@ -19,3 +19,21 @@ test('rechaza configuraciones inválidas', () => {
   assert.throws(() => generatePassword(20, []));
   assert.throws(() => generatePassword(20, ['invalid']));
 });
+
+test('incluye la palabra literal con longitud exacta y grupos aleatorios', () => {
+  for (const word of ['Milo', 'Ñoño', 'Jose\u0301', '123', '𐐀']) {
+    const normalized = word.normalize('NFC');
+    const value = generatePassword(20, Object.keys(GROUPS), word);
+    assert.equal([...value].length, 20);
+    assert.ok(value.includes(normalized));
+    const remainder = value.replace(normalized, '');
+    for (const group of Object.values(GROUPS)) assert.ok([...remainder].some(char => group.includes(char)));
+  }
+  const value = generatePassword(12, ['digits'], 'Milo');
+  assert.match(value.replace('Milo', ''), /^\d{8}$/);
+});
+test('rechaza palabras inválidas o sin espacio suficiente para aleatoriedad', () => {
+  for (const word of ['a b', '<script>', '🐶', 'a'.repeat(41), 123]) assert.throws(() => generatePassword(128, ['lower'], word));
+  assert.throws(() => generatePassword(8, ['lower'], 'Milo'), /12/);
+  assert.equal(generatePassword(20, ['digits'], '  ').length, 20);
+});

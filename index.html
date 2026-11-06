@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#212121"><meta name="description" content="Contraseñas temporales, generadas en tu dispositivo.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./style.css?v=5"><title>PasswordCreator</title>
-<script src="./app.js?v=5" type="module"></script>
+<link rel="stylesheet" href="./style.css?v=6"><title>PasswordCreator</title>
+<script src="./app.js?v=6" type="module"></script>
 </head>
 <body>
 <main class="panel" aria-label="PasswordCreator">
@@ -15,7 +15,10 @@
 </nav>
 <section id="create-panel" aria-labelledby="create-tab">
 <h1 class="sr-only">Generador de contraseñas</h1>
-<form id="generator"><button type="submit" class="primary">Generar contraseña</button></form>
+<form id="generator" autocomplete="off">
+<label class="personal-toggle"><input type="checkbox" id="personalize"> Incluir una palabra</label>
+<div id="personal-options" hidden><label for="personal-word">Tu palabra</label><input id="personal-word" type="text" maxlength="80" placeholder="Ej.: Milo" autocomplete="off" spellcheck="false" autocapitalize="off" aria-describedby="personal-note"><p id="personal-note" class="note">Se incluye tal como la escribís, aunque sus letras no estén activadas en Configuración. Quedan al menos 8 caracteres aleatorios. Un nombre conocido puede hacerla más fácil de adivinar.</p></div>
+<button type="submit" class="primary">Generar contraseña</button></form>
 <div class="result" id="result" hidden><output id="password" aria-label="Contraseña generada"></output><div class="result-actions"><button id="copy" type="button">Copiar y borrar</button><button id="clear" class="secondary" type="button">Borrar</button></div></div>
 <p id="status" role="status" aria-live="polite">Generá una contraseña para empezar.</p>
 <p class="note">Se borra al copiar, salir de la pestaña o después de 60 segundos.</p>
