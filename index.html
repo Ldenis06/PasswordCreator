@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#212121"><meta name="description" content="Contraseñas temporales, generadas en tu dispositivo.">
-<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./style.css?v=6"><title>PasswordCreator</title>
-<script src="./app.js?v=6" type="module"></script>
+<link rel="manifest" href="./manifest.webmanifest?v=7"><link rel="icon" href="./icons/icon.svg?v=7" type="image/svg+xml">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PasswordCreator"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<link rel="stylesheet" href="./style.css?v=7"><title>PasswordCreator</title>
+<script src="./app.js?v=7" type="module"></script>
 </head>
 <body>
 <main class="panel" aria-label="PasswordCreator">
+<img class="app-logo" src="./icons/icon.svg?v=7" alt="PasswordCreator: candado azul" width="40" height="40">
 <nav aria-label="Secciones">
 <button type="button" id="create-tab" class="nav-button active" aria-controls="create-panel" aria-expanded="true">Crear contraseña</button>
 <button type="button" id="settings-tab" class="nav-button" aria-controls="settings-panel" aria-expanded="false">Configuración</button>
@@ -34,7 +37,10 @@
 </div></fieldset>
 <label class="theme-setting" for="theme">Apariencia<select id="theme"><option value="system">Sistema</option><option value="dark">Oscura</option><option value="light">Clara</option></select></label>
 <p class="note">Las contraseñas no se guardan ni se envían. El portapapeles puede conservar su historial.</p>
-<button id="install" class="secondary" hidden>Instalar aplicación</button>
+
 </section>
+<div class="installation"><button id="install" type="button" class="secondary" aria-controls="install-help" aria-expanded="false">Instalar en el celular</button>
+<p id="install-status" class="note" role="status" hidden></p>
+<div id="install-help" class="note" hidden><p><strong>Android · Chrome</strong><br>Abrí esta página directamente en Chrome, en una pestaña normal (no de incógnito). Tocá el menú ⋮ y elegí «Agregar a la pantalla principal» → «Instalar». Según la versión, puede aparecer como «Instalar aplicación».</p><p>Si la abriste desde WhatsApp, Instagram u otra app, primero elegí «Abrir en Chrome». Si solo ofrece crear un acceso directo, actualizá Chrome y volvé a abrir la página con conexión.</p><p><strong>iPhone · Safari</strong><br>Tocá Compartir → «Agregar a inicio» y confirmá. Activá «Abrir como app web» si aparece.</p><p>Si ya está instalada, abrila desde el ícono de tu pantalla de inicio.</p></div></div>
 </main>
 </body></html>

@@ -1,4 +1,4 @@
-import { generatePassword } from './generator.js?v=6';
+import { generatePassword } from './generator.js?v=7';
 const form = document.querySelector('#generator');
 const length = document.querySelector('#length');
 const result = document.querySelector('#result');
@@ -47,15 +47,49 @@ document.querySelector('#copy').addEventListener('click', async () => {
 document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); });
 window.addEventListener('pagehide', () => clear());
 const install = document.querySelector('#install');
+const installHelp = document.querySelector('#install-help');
+const installStatus = document.querySelector('#install-status');
+const standalone = matchMedia('(display-mode: standalone)');
 let installPrompt;
+function showInstalled() {
+  install.hidden = true;
+  installHelp.hidden = true;
+  install.setAttribute('aria-expanded', 'false');
+  installStatus.hidden = false;
+  installStatus.textContent = 'La aplicación está instalada.';
+}
+if (standalone.matches || navigator.standalone === true) showInstalled();
+standalone.addEventListener('change', event => {
+  if (event.matches) showInstalled();
+  else { install.hidden = false; installStatus.hidden = true; }
+});
 window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault(); installPrompt = event; install.hidden = false;
+  event.preventDefault();
+  installPrompt = event;
+  install.hidden = false;
 });
 install.addEventListener('click', async () => {
-  if (!installPrompt) return;
-  await installPrompt.prompt(); installPrompt = undefined; install.hidden = true;
+  clear();
+  if (!installPrompt) {
+    installHelp.hidden = !installHelp.hidden;
+    install.setAttribute('aria-expanded', String(!installHelp.hidden));
+    return;
+  }
+  const prompt = installPrompt;
+  installPrompt = undefined;
+  try {
+    await prompt.prompt();
+    const choice = await prompt.userChoice;
+    if (choice.outcome === 'dismissed') {
+      installHelp.hidden = false;
+      install.setAttribute('aria-expanded', 'true');
+    }
+  } catch {
+    installHelp.hidden = false;
+    install.setAttribute('aria-expanded', 'true');
+  }
 });
-window.addEventListener('appinstalled', () => { install.hidden = true; installPrompt = undefined; });
+window.addEventListener('appinstalled', () => { installPrompt = undefined; showInstalled(); });
 if ('serviceWorker' in navigator) {
   const wasControlled = Boolean(navigator.serviceWorker.controller);
   let refreshing = false;
