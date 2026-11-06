@@ -17,4 +17,4 @@ const server = createServer(async (req, res) => {
     res.writeHead(200); res.end(req.method === 'HEAD' ? undefined : data);
   } catch { res.writeHead(500); res.end('No se pudo cargar el recurso.'); }
 });
-server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => console.log('Clave fugaz: servidor iniciado en puerto '+server.address().port));
+server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => console.log('PasswordCreator: servidor iniciado en puerto '+server.address().port));
