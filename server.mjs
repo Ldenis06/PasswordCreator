@@ -2,10 +2,12 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 const files = new Map([
   ['/', ['index.html', 'text/html']], ['/index.html', ['index.html', 'text/html']],
-  ...['style.css','app.js','generator.js','sw.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png','icons/lock-192.png','icons/lock-512.png','icons/lock-maskable-512.png','icons/apple-touch-icon.png'].map(file => ['/'+file,[file, file.endsWith('.css') ? 'text/css' : file.endsWith('.js') ? 'text/javascript' : file.endsWith('.webmanifest') ? 'application/manifest+json' : file.endsWith('.svg') ? 'image/svg+xml' : 'image/png']])
+  ...['style.css','app.js','pwa.js','generator.js','sw.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png','icons/lock-192.png','icons/lock-512.png','icons/lock-maskable-512.png','icons/apple-touch-icon.png'].map(file => ['/'+file,[file, file.endsWith('.css') ? 'text/css' : file.endsWith('.js') ? 'text/javascript' : file.endsWith('.webmanifest') ? 'application/manifest+json' : file.endsWith('.svg') ? 'image/svg+xml' : 'image/png']])
 ]);
 const server = createServer(async (req, res) => {
-  const entry = files.get(new URL(req.url, 'http://localhost').pathname);
+  const path = new URL(req.url, 'http://localhost').pathname;
+  const localPath = path.startsWith('/PasswordCreator/') ? path.slice('/PasswordCreator'.length) : path;
+  const entry = files.get(localPath);
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'no-referrer');

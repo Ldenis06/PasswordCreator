@@ -1,4 +1,5 @@
-import { generatePassword } from './generator.js?v=8';
+import { initializePWA } from './pwa.js?v=9';
+import { generatePassword } from './generator.js?v=9';
 const form = document.querySelector('#generator');
 const length = document.querySelector('#length');
 const result = document.querySelector('#result');
@@ -46,76 +47,7 @@ document.querySelector('#copy').addEventListener('click', async () => {
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); });
 window.addEventListener('pagehide', () => clear());
-const install = document.querySelector('#install');
-const installHelp = document.querySelector('#install-help');
-const installStatus = document.querySelector('#install-status');
-const standalone = matchMedia('(display-mode: standalone)');
-let installPrompt;
-function updateAppMode() {
-  install.hidden = false;
-  if (standalone.matches || navigator.standalone === true) {
-    install.textContent = 'Ayuda de instalación';
-    installStatus.hidden = false;
-    installStatus.textContent = 'Esta ventana está abierta en modo aplicación.';
-  } else {
-    install.textContent = 'Instalar en el celular';
-    installStatus.hidden = true;
-  }
-}
-function showInstallHelp() {
-  installHelp.hidden = false;
-  install.setAttribute('aria-expanded', 'true');
-}
-function showInstallRequested() {
-  install.textContent = 'Ayuda de instalación';
-  installStatus.hidden = false;
-  installStatus.textContent = 'Chrome recibió la solicitud. Comprobá si aparece PasswordCreator en la lista de aplicaciones del celular.';
-  showInstallHelp();
-}
-updateAppMode();
-standalone.addEventListener('change', updateAppMode);
-window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault();
-  installPrompt = event;
-  install.hidden = false;
-});
-install.addEventListener('click', async () => {
-  clear();
-  if (!installPrompt) {
-    installHelp.hidden = !installHelp.hidden;
-    install.setAttribute('aria-expanded', String(!installHelp.hidden));
-    return;
-  }
-  const prompt = installPrompt;
-  installPrompt = undefined;
-  try {
-    await prompt.prompt();
-    const choice = await prompt.userChoice;
-    if (choice.outcome === 'accepted') showInstallRequested();
-    else showInstallHelp();
-  } catch {
-    installStatus.hidden = false;
-    installStatus.textContent = 'No se pudo abrir el aviso de instalación. Revisá los pasos de ayuda.';
-    showInstallHelp();
-  }
-});
-window.addEventListener('appinstalled', () => { installPrompt = undefined; showInstallRequested(); });
-if ('serviceWorker' in navigator) {
-  const wasControlled = Boolean(navigator.serviceWorker.controller);
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (wasControlled && !refreshing) {
-      refreshing = true;
-      clear('Actualizando la aplicación…');
-      location.reload();
-    }
-  });
-  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
-    .then(registration => registration.update())
-    .catch(() => {
-      status.textContent = 'Modo sin conexión no disponible. Podés seguir generando contraseñas.';
-    });
-}
+initializePWA({ beforeInstall: () => clear() });
 
 const tabs = [document.querySelector('#create-tab'), document.querySelector('#settings-tab')];
 for (const tab of tabs) tab.addEventListener('click', () => {
