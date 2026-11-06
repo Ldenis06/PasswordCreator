@@ -11,6 +11,8 @@ export function initializePWA({ beforeInstall = () => {} } = {}) {
     const inApp = standalone.matches || navigator.standalone === true;
     button.textContent = inApp ? 'Ayuda de instalación' : 'Instalar aplicación';
     button.hidden = false;
+    const recoveryNote = document.querySelector('#recovery-note');
+    if (recoveryNote) recoveryNote.hidden = inApp;
     message(inApp ? 'Abierta en modo aplicación.' : '');
   }
   renderMode();

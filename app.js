@@ -1,5 +1,5 @@
-import { initializePWA } from './pwa.js?v=9';
-import { generatePassword } from './generator.js?v=9';
+import { initializePWA } from './pwa.js?v=10';
+import { generatePassword } from './generator.js?v=10';
 const form = document.querySelector('#generator');
 const length = document.querySelector('#length');
 const result = document.querySelector('#result');

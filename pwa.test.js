@@ -27,7 +27,7 @@ async function worker(fetch) {
   const context = vm.createContext({
     URL, Request, Response, AbortController, setTimeout, clearTimeout, fetch,
     self: { registration: { scope: 'https://example.github.io/PasswordCreator/' }, addEventListener: (name, fn) => handlers.set(name, fn) },
-    caches: { open: async () => ({ match: async url => { requests.push(url); return url.endsWith('/index.html') ? cachedShell : undefined; } }) }
+    caches: { open: async () => ({ match: async url => { requests.push(url); return url.endsWith('/index.html') ? cachedShell : url.endsWith('/mobile.html') ? new Response('offline recovery shell') : undefined; } }) }
   });
   vm.runInContext(await readFile(new URL('sw.js', root), 'utf8'), context);
   return {handlers, requests};
@@ -55,4 +55,24 @@ test('worker does not intercept unrelated requests or POST data', async () => {
     {url:'https://example.github.io/PasswordCreator/',method:'POST',mode:'navigate'},
     {url:'https://example.github.io/PasswordCreator/private-data',method:'GET',mode:'cors'}
   ]) handlers.get('fetch')({request, respondWith: () => assert.fail('unrelated request intercepted')});
+});
+
+test('recovery installation has a different identity, manifest and launch URL', async () => {
+  const { renderMobilePage } = await import('./mobile-page.mjs');
+  const normal = JSON.parse(await readFile(new URL('manifest.webmanifest', root), 'utf8'));
+  const recovery = JSON.parse(await readFile(new URL('mobile.webmanifest', root), 'utf8'));
+  assert.notEqual(recovery.id, normal.id);
+  assert.notEqual(recovery.start_url, normal.start_url);
+  assert.equal(recovery.display, 'standalone');
+  const page = renderMobilePage(await readFile(new URL('index.html', root), 'utf8'));
+  assert.ok(page.includes('href="./mobile.webmanifest"'));
+  assert.ok(!page.includes('href="./manifest.webmanifest"'));
+  assert.ok(page.includes('podrían aparecer dos íconos'));
+});
+test('offline recovery launch keeps its own identity and manifest', async () => {
+  const {handlers, requests} = await worker(async () => { throw new Error('offline'); });
+  let response;
+  handlers.get('fetch')({request:{url:'https://example.github.io/PasswordCreator/mobile.html?install=1',method:'GET',mode:'navigate'},respondWith: promise => {response=promise;}});
+  assert.equal(await (await response).text(), 'offline recovery shell');
+  assert.equal(requests[0], 'https://example.github.io/PasswordCreator/mobile.html');
 });

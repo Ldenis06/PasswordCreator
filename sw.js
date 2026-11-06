@@ -1,9 +1,9 @@
-const CACHE = 'passwordcreator-pwa-v9';
+const CACHE = 'passwordcreator-pwa-v10';
 const ROOT = new URL('./', self.registration.scope);
 const SHELL = new URL('./index.html', ROOT).href;
 const ASSETS = [
-  './index.html', './style.css?v=9', './app.js?v=9', './generator.js?v=9',
-  './pwa.js?v=9', './manifest.webmanifest', './icons/icon.svg',
+  './index.html', './mobile.html', './mobile.webmanifest', './style.css?v=10', './app.js?v=10', './generator.js?v=10',
+  './pwa.js?v=10', './manifest.webmanifest', './icons/icon.svg',
   './icons/lock-192.png', './icons/lock-512.png',
   './icons/lock-maskable-512.png', './icons/apple-touch-icon.png'
 ].map(path => new URL(path, ROOT).href);
@@ -39,7 +39,9 @@ self.addEventListener('fetch', event => {
   if (url.origin !== ROOT.origin || !url.pathname.startsWith(ROOT.pathname)) return;
   // Handle root, index.html and launch/update query strings with one offline shell.
   if (event.request.mode === 'navigate') {
-    event.respondWith(networkFirst(event.request, SHELL));
+    const shell = url.pathname === new URL('./mobile.html', ROOT).pathname
+      ? new URL('./mobile.html', ROOT).href : SHELL;
+    event.respondWith(networkFirst(event.request, shell));
     return;
   }
   const fallback = ASSETS.find(asset => new URL(asset).pathname === url.pathname);
