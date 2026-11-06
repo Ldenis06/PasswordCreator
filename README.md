@@ -28,3 +28,5 @@ Abrí la web en un navegador compatible y elegí Instalar aplicación cuando se 
 ## Interfaz
 
 Crear contraseña muestra el generador. Configuración permite ajustar longitud y caracteres, y elegir apariencia clara, oscura o del sistema. Las preferencias duran durante la sesión y no se guardan.
+
+Las cargas en línea priorizan los archivos publicados. Al activarse una nueva versión del service worker, la página se recarga una vez y descarta cualquier contraseña visible; sin conexión se usan únicamente los recursos estáticos precargados.

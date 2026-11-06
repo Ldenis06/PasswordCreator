@@ -51,9 +51,22 @@ install.addEventListener('click', async () => {
   await installPrompt.prompt(); installPrompt = undefined; install.hidden = true;
 });
 window.addEventListener('appinstalled', () => { install.hidden = true; installPrompt = undefined; });
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {
-  status.textContent = 'Modo sin conexión no disponible. Podés seguir generando contraseñas.';
-});
+if ('serviceWorker' in navigator) {
+  const wasControlled = Boolean(navigator.serviceWorker.controller);
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (wasControlled && !refreshing) {
+      refreshing = true;
+      clear('Actualizando la aplicación…');
+      location.reload();
+    }
+  });
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+    .then(registration => registration.update())
+    .catch(() => {
+      status.textContent = 'Modo sin conexión no disponible. Podés seguir generando contraseñas.';
+    });
+}
 
 const tabs = [document.querySelector('#create-tab'), document.querySelector('#settings-tab')];
 for (const tab of tabs) tab.addEventListener('click', () => {
