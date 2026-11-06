@@ -1,4 +1,4 @@
-import { generatePassword } from './generator.js?v=7';
+import { generatePassword } from './generator.js?v=8';
 const form = document.querySelector('#generator');
 const length = document.querySelector('#length');
 const result = document.querySelector('#result');
@@ -51,18 +51,29 @@ const installHelp = document.querySelector('#install-help');
 const installStatus = document.querySelector('#install-status');
 const standalone = matchMedia('(display-mode: standalone)');
 let installPrompt;
-function showInstalled() {
-  install.hidden = true;
-  installHelp.hidden = true;
-  install.setAttribute('aria-expanded', 'false');
-  installStatus.hidden = false;
-  installStatus.textContent = 'La aplicación está instalada.';
+function updateAppMode() {
+  install.hidden = false;
+  if (standalone.matches || navigator.standalone === true) {
+    install.textContent = 'Ayuda de instalación';
+    installStatus.hidden = false;
+    installStatus.textContent = 'Esta ventana está abierta en modo aplicación.';
+  } else {
+    install.textContent = 'Instalar en el celular';
+    installStatus.hidden = true;
+  }
 }
-if (standalone.matches || navigator.standalone === true) showInstalled();
-standalone.addEventListener('change', event => {
-  if (event.matches) showInstalled();
-  else { install.hidden = false; installStatus.hidden = true; }
-});
+function showInstallHelp() {
+  installHelp.hidden = false;
+  install.setAttribute('aria-expanded', 'true');
+}
+function showInstallRequested() {
+  install.textContent = 'Ayuda de instalación';
+  installStatus.hidden = false;
+  installStatus.textContent = 'Chrome recibió la solicitud. Comprobá si aparece PasswordCreator en la lista de aplicaciones del celular.';
+  showInstallHelp();
+}
+updateAppMode();
+standalone.addEventListener('change', updateAppMode);
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
   installPrompt = event;
@@ -80,16 +91,15 @@ install.addEventListener('click', async () => {
   try {
     await prompt.prompt();
     const choice = await prompt.userChoice;
-    if (choice.outcome === 'dismissed') {
-      installHelp.hidden = false;
-      install.setAttribute('aria-expanded', 'true');
-    }
+    if (choice.outcome === 'accepted') showInstallRequested();
+    else showInstallHelp();
   } catch {
-    installHelp.hidden = false;
-    install.setAttribute('aria-expanded', 'true');
+    installStatus.hidden = false;
+    installStatus.textContent = 'No se pudo abrir el aviso de instalación. Revisá los pasos de ayuda.';
+    showInstallHelp();
   }
 });
-window.addEventListener('appinstalled', () => { installPrompt = undefined; showInstalled(); });
+window.addEventListener('appinstalled', () => { installPrompt = undefined; showInstallRequested(); });
 if ('serviceWorker' in navigator) {
   const wasControlled = Boolean(navigator.serviceWorker.controller);
   let refreshing = false;

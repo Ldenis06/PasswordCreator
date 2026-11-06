@@ -1,4 +1,4 @@
-const CACHE = 'passwordcreator-v7';
+const CACHE = 'passwordcreator-v8';
 const ASSETS = ['./', './index.html', './style.css', './app.js', './generator.js', './manifest.webmanifest', './icons/icon.svg', './icons/lock-192.png', './icons/lock-512.png', './icons/lock-maskable-512.png', './icons/apple-touch-icon.png'].map(path => new URL(path, self.registration.scope).href);
 self.addEventListener('install', event => event.waitUntil(
   caches.open(CACHE)

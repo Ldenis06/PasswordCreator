@@ -6,3 +6,5 @@
 .personal-toggle{display:flex;align-items:center;gap:9px;font-size:14px;margin-bottom:20px;cursor:pointer}#personal-options{margin-bottom:22px}#personal-options>label{display:block;font-size:13px;margin-bottom:8px}#personal-word{width:100%;background:var(--soft);color:var(--text);border:1px solid var(--line);border-radius:5px;padding:12px;font:inherit}#personal-word::placeholder{color:var(--muted)}
 
 .app-logo{display:block;margin:0 auto 24px;border-radius:10px}.installation{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}.installation button{width:100%}.installation p{margin:12px 0 0}#install{margin-top:0}
+
+.installation details{margin-top:16px}.installation summary{cursor:pointer;color:var(--text);font-weight:600}.installation ol{padding-left:20px}.installation li{margin-top:10px}
